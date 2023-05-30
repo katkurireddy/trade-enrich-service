@@ -9,13 +9,14 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.io.File;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
 @Service
-public class EnrichService implements IEnrichService{
+public class EnrichService implements IEnrichService {
 
     private static final Logger logger = LoggerFactory.getLogger(EnrichService.class);
     private final EnrichUtils enrichUtils;
@@ -27,8 +28,8 @@ public class EnrichService implements IEnrichService{
         this.enrichUtils = new EnrichUtils();
     }
 
-    public String enrichTradeData(String tradeData) {
-        List<TradeModel> tradeModels = enrichUtils.parseAndValidateTradeCsv(tradeData);
+    public String enrichTradeData(File file) {
+        List<TradeModel> tradeModels = enrichUtils.parseAndValidateTradeCsv(file);
         List<String[]> enrichedTrades = new ArrayList<>();
         Map<Integer, EnrichModel> allEnrichProducts = tradeEnrichment.findAllProducts();
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyyMMdd");
@@ -50,4 +51,6 @@ public class EnrichService implements IEnrichService{
         }
         return EnrichUtils.writeListToCSV(enrichedTrades);
     }
+
+
 }

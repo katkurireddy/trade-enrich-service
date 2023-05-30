@@ -8,7 +8,11 @@ import org.apache.commons.lang3.EnumUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
@@ -19,12 +23,11 @@ public class TradeUtils {
     private static final Logger logger = LoggerFactory.getLogger(TradeUtils.class);
 
     public static TradeModel getTradeModelFromCSVLine(CSVRecord trade) {
-        if(isTradeValid(trade)) {
+        if (isTradeValid(trade)) {
             LocalDate date = LocalDate.parse(trade.get(TradeHeaders.date), DateTimeFormatter.ofPattern("yyyyMMdd"));
             BigDecimal price = new BigDecimal(trade.get(TradeHeaders.price));
             return new TradeModel(date, Integer.valueOf(trade.get(TradeHeaders.product_id)), trade.get(TradeHeaders.currency), price);
-        }
-        else return null;
+        } else return null;
     }
 
     private static boolean isDateValid(String dateStr) {
@@ -40,23 +43,23 @@ public class TradeUtils {
     }
 
     public static boolean isTradeValid(CSVRecord trade) {
-        if(trade.size() != 4) {
+        if (trade.size() != 4) {
             logger.error("Supplied trade is not valid. Missing Columns {}", trade.toString());
             return false;
         }
-        if (! isDateValid(trade.get(TradeHeaders.date))) {
+        if (!isDateValid(trade.get(TradeHeaders.date))) {
             logger.error("Supplied date {} is not valid for trade [date {}, productId {}, currency {}, price {}]", trade.get(TradeHeaders.date),
-                    trade.get("product_id"), trade.get(TradeHeaders.date), trade.get("currency"),trade.get("price"));
+                    trade.get("product_id"), trade.get(TradeHeaders.date), trade.get("currency"), trade.get("price"));
             return false;
         }
 
-        if(! isCcyValid(trade.get(TradeHeaders.currency))) {
+        if (!isCcyValid(trade.get(TradeHeaders.currency))) {
             logger.error("Supplied currency {} is not valid for [trade date {}, productId {}, currency {}, price {}]", trade.get("currency"),
                     trade.get(TradeHeaders.date), trade.get("product_id"), trade.get("currency"), trade.get("price"));
             return false;
         }
 
-        if(! isPriceValid(trade.get(TradeHeaders.price))) {
+        if (!isPriceValid(trade.get(TradeHeaders.price))) {
             logger.error("Supplied price {} is not valid for [trade date {}, productId {}, currency {}, price {}]", trade.get("price"),
                     trade.get(TradeHeaders.date), trade.get("product_id"), trade.get("currency"), trade.get("price"));
             return false;
@@ -72,9 +75,16 @@ public class TradeUtils {
         try {
             new BigDecimal(price);
             return true;
-        }
-        catch (NumberFormatException e) {
+        } catch (NumberFormatException e) {
             return false;
         }
+    }
+
+    public static File convertMultiPartToFile(MultipartFile file) throws IOException {
+        File convFile = new File(file.getOriginalFilename());
+        FileOutputStream fos = new FileOutputStream(convFile);
+        fos.write(file.getBytes());
+        fos.close();
+        return convFile;
     }
 }

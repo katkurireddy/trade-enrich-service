@@ -2,9 +2,15 @@ package com.enrich.org.tradeenrichservice.controller;
 
 import com.enrich.org.tradeenrichservice.service.EnrichService;
 import com.enrich.org.tradeenrichservice.service.IEnrichService;
-import org.springframework.http.MediaType;
+import com.enrich.org.tradeenrichservice.util.TradeUtils;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.multipart.MultipartFile;
+
+import java.io.IOException;
 
 @RestController
 @RequestMapping("/api/v1")
@@ -16,10 +22,14 @@ public class EnrichController {
         this.enrichService = enrichService;
     }
 
-    @PostMapping(value = "/enrich", produces = MediaType.TEXT_PLAIN_VALUE, consumes = MediaType.TEXT_PLAIN_VALUE)
-    private ResponseEntity<String> enrich(@RequestBody String tradeData) {
-        String enrichedTrades = enrichService.enrichTradeData(tradeData);
-        return ResponseEntity.ok().body(enrichedTrades);
+    @PostMapping(value = "/enrich")
+    private ResponseEntity<String> enrich(@RequestParam("file") MultipartFile file) {
+        try {
+            String enrichedTrades = enrichService.enrichTradeData(TradeUtils.convertMultiPartToFile(file));
+            return ResponseEntity.ok().body(enrichedTrades);
+        }
+        catch (IOException ioException) {
+            return ResponseEntity.badRequest().body(ioException.getMessage());
+        }
     }
-
 }

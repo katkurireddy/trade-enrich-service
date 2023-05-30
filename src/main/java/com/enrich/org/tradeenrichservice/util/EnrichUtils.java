@@ -13,10 +13,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.util.ResourceUtils;
 
-import java.io.FileReader;
-import java.io.IOException;
-import java.io.Reader;
-import java.io.StringReader;
+import java.io.*;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -49,13 +46,13 @@ public class EnrichUtils {
         return enrichModelMap;
     }
 
-    public List<TradeModel> parseAndValidateTradeCsv(String tradeData) {
+    public List<TradeModel> parseAndValidateTradeCsv(File file) {
         CSVFormat csvFormat = CSVFormat.DEFAULT.builder()
                 .setHeader(TradeHeaders.class)
                 .setSkipHeaderRecord(true)
                 .build();
         List<TradeModel> tradeModels = new ArrayList<>();
-        try (CSVParser parser = csvFormat.parse(new StringReader(tradeData))) {
+        try (CSVParser parser = csvFormat.parse(new FileReader(file))) {
             for (CSVRecord tradeInfo : parser) {
                 TradeModel tradeModel = TradeUtils.getTradeModelFromCSVLine(tradeInfo);
                 if (tradeModel != null) {
