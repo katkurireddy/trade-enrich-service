@@ -11,6 +11,7 @@ import org.apache.commons.csv.CSVRecord;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.util.ResourceUtils;
 
 import java.io.FileReader;
 import java.io.IOException;
@@ -24,27 +25,9 @@ import java.util.Map;
 public class EnrichUtils {
     private static final Logger logger = LoggerFactory.getLogger(EnrichUtils.class);
 
-    public static EnrichModel getEnrichModelFromProductIdFromFile(Integer productId, String fileName) {
-        try (Reader in = new FileReader(fileName)) {
-            CSVFormat csvFormat = CSVFormat.DEFAULT.builder()
-                    .setHeader(EnrichHeaders.class)
-                    .setSkipHeaderRecord(true)
-                    .build();
-            CSVParser parser = csvFormat.parse(in);
-            for (CSVRecord record : parser) {
-                Integer id = Integer.valueOf(record.get(EnrichHeaders.product_id));
-                if (productId.equals(id))
-                    return new EnrichModel(id, record.get(EnrichHeaders.product_name));
-            }
-        } catch (IOException e) {
-            logger.error("Error while opening enrichment file", e);
-        }
-        return null;
-    }
-
     public static Map<Integer, EnrichModel> getAllProductsFromFile(String fileName) {
         Map<Integer, EnrichModel> enrichModelMap = new HashMap<>();
-        try (Reader in = new FileReader(fileName)) {
+        try (Reader in = new FileReader(ResourceUtils.getFile(fileName))) {
             CSVFormat csvFormat = CSVFormat.DEFAULT.builder()
                     .setHeader(EnrichHeaders.class)
                     .setSkipHeaderRecord(true)

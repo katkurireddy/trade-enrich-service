@@ -40,7 +40,7 @@ public class EnrichUtilTest {
 
     @Test
     public void getAllProductsFromFileHappyPathTest() {
-        Map<Integer, EnrichModel> allProductsFromFile = EnrichUtils.getAllProductsFromFile("src/test/resources/productValid.csv");
+        Map<Integer, EnrichModel> allProductsFromFile = EnrichUtils.getAllProductsFromFile("classpath:productValid.csv");
         assertEquals(10, allProductsFromFile.size());
         List<Integer> expectedKeys = Arrays.asList(1,2,3,4,5,6,7,8,9,10);
         assertTrue(allProductsFromFile.keySet().containsAll(expectedKeys));
@@ -48,7 +48,7 @@ public class EnrichUtilTest {
 
     @Test
     public void getAllProductsFromFileBlankProductNameTest() {
-        Map<Integer, EnrichModel> allProductsFromFile = EnrichUtils.getAllProductsFromFile("src/test/resources/productInValidRow.csv");
+        Map<Integer, EnrichModel> allProductsFromFile = EnrichUtils.getAllProductsFromFile("classpath:productInValidRow.csv");
         assertEquals(9, allProductsFromFile.size());
         List<Integer> expectedKeys = Arrays.asList(1,2,3,4,5,7,8,9,10);
         assertTrue(allProductsFromFile.keySet().containsAll(expectedKeys));
