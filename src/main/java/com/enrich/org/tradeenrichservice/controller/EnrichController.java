@@ -1,6 +1,5 @@
 package com.enrich.org.tradeenrichservice.controller;
 
-import com.enrich.org.tradeenrichservice.service.EnrichService;
 import com.enrich.org.tradeenrichservice.service.IEnrichService;
 import com.enrich.org.tradeenrichservice.util.TradeUtils;
 import org.springframework.http.ResponseEntity;
@@ -18,7 +17,7 @@ public class EnrichController {
 
     private final IEnrichService enrichService;
 
-    public EnrichController(EnrichService enrichService) {
+    public EnrichController(IEnrichService enrichService) {
         this.enrichService = enrichService;
     }
 
